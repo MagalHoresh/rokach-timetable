@@ -182,7 +182,7 @@
     .settings-dialog .parent-panel { width: 100%; margin: 14px 0; }
     .settings-dialog .family-grid { grid-template-columns: 1fr 1fr; }
     .settings-dialog .edit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .settings-presets { display: flex; gap: 10px; margin-bottom: 18px; }
+    .settings-presets { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
     .settings-presets button { min-width: 100px; }
     .settings-presets button[aria-pressed="true"] { background: var(--teal); color: white; }
     .settings-dialog .device-notice, .settings-dialog .screen-note { margin-inline: 0; }
@@ -577,6 +577,7 @@
       <h3>בחירת מערכת הכיתה</h3>
       <div class="settings-presets">
         <button type="button" id="load-a1" aria-pressed="false">א׳1</button>
+        <button type="button" id="load-a2" aria-pressed="false">א׳2</button>
         <button type="button" id="load-a3" aria-pressed="false">א׳3</button>
       </div>
       <details class="parent-panel family-panel" id="family-panel">
@@ -600,7 +601,7 @@
     <summary>עריכת מערכת השעות · לכל כיתה בשכבת א׳</summary>
     <div class="parent-content">
       <p>בכל משבצת בוחרים את המקצוע לאותו יום ושיעור. אפשר לבחור מקצוע שני לשיעור משולב. המחברות, הספרים וכרטיסי האריזה מתעדכנים בהתאם.</p>
-      <p class="schedule-warning">בביקור הראשון מוצגת א׳1. אפשר לבחור א׳3 או לערוך את השיעורים; הבחירה נשמרת במכשיר. מערכת א׳2 טרם נמסרה. שינוי שם הכיתה לבדו אינו משנה את השיעורים.</p>
+      <p class="schedule-warning">בביקור הראשון מוצגת א׳1. אפשר לבחור א׳2 או א׳3 או לערוך את השיעורים; הבחירה נשמרת במכשיר. הוספת מערכת חדשה אינה מחליפה את הבחירה או ההתאמות שכבר נשמרו. שינוי שם הכיתה לבדו אינו משנה את השיעורים.</p>
       <form id="schedule-form">
         <div id="schedule-fields"></div>
         <button type="submit" class="primary">עדכון וחזרה למערכת</button>
@@ -650,11 +651,13 @@
       <p>מחברת החגים הלבנה זמינה דרך המקצוע „חגים”, למקרה שהוא מופיע במערכת הכיתה. 5 מחברות השורות הנוספות ו־2 המחברות המשובצות הנוספות מיועדות להמשך השנה, ולא הוספו לאריזה היומית.</p>
       <h2>מה עדיין דורש התאמה?</h2>
       <p><strong>א׳1 עודכנה לפי הצילום מ־10.10.2026:</strong> שני בשיעור 3 — מוסיקה ועברית; שלישי בשיעורים 1–2 — אמנות ועברית; רביעי בשיעור 5 — כישורי חיים ועברית. השיעורים המשולבים נשמרו יחד. נעלי ספורט נדרשות בראשון, רביעי, חמישי ושישי בלבד, לפי השיעורים המסומנים בתמונה.</p>
+      <p><strong>מערכת א׳2:</strong> הועתקה מהצילום שסופק, כולל עברית ומוסיקה בראשון בשיעור 3, ואומנות ועברית בשלישי בשיעור 3 ובחמישי בשיעור 2. השיעורים המשולבים נשמרו יחד. בשישי בשיעור 5 אין שיעור; איור „שבת שלום” אינו מקצוע. נעלי ספורט נדרשות בשני ובשישי בלבד, בשיעורי חינוך גופני; לא נוסף ציוד ספורט לשעה שכבתית או לכישורי חיים.</p>
+      <p><strong>שעות א׳2 לפי הצילום:</strong> שיעור 1 — <bdi dir="ltr">8:00–8:45</bdi>; שיעור 2 — <bdi dir="ltr">8:45–9:30</bdi>; שיעור 3 — <bdi dir="ltr">10:10–10:55</bdi>; שיעור 4 — <bdi dir="ltr">10:55–11:40</bdi>; שיעור 5 — <bdi dir="ltr">12:00–12:45</bdi>. בטבלאות מוצגים מספרי השיעורים, כפי שמוצגים בשאר הכיתות.</p>
       <p><strong>מערכת א׳3:</strong> הועתקה מהצילום שנוסף ב־10.09.2026, כולל השיעורים המשולבים. „תגבור עברית” מקושר לציוד עברית. „כישורי חיים דרך ספורט” נשמר כמקצוע נפרד מחינוך גופני; לא הונח שהוא מחייב בגדי ספורט. בשישי בשיעור 4 נשמרו חינוך וכישורי חיים וגם חשבון, כפי שצוין בצילום עם קו נטוי.</p>
       <p>לגאומטריה מביאים מחברת חלקה נפרדת ללא צבע מוגדר. לשיר של יום ולמפתח הלב מוצגת מחברת לפי התמונה, בלי להמציא סוג או צבע שלא נמסרו. מחברת המוסיקה נשארה לפי רשימת הציוד המקורית. ספר להחזרה מופיע תמיד בסוף רשימת האריזה, ורק אם נדרש ביום הזה. נעלי ספורט מופיעות אחרי ציוד השיעורים ולפני הקלמר, המים והאוכל, רק בימים שבהם נדרשות. גם בא׳3 נעלי ספורט מחליפות את דוגמת בגדי הספורט, לפי אישור ההורה; בא׳1 נשמרו הימים מהצילום. מים ואוכל הם תזכורות אישיות.</p>
       <p><strong>טיפ לזיהוי עצמאי:</strong> על שתי המחברות השקופות כדאי לשים מדבקות שם מקצוע גדולות. אפשר גם להוסיף מדבקה תואמת לאיור. כריכות מהרשת עשויות להציג חלק או מהדורה שונים; צריך להשוות לספרים שבבית לפני שמסתמכים עליהן לזיהוי עצמאי.</p>
       <div id="cover-sources"></div>
-      <p class="edit-help">מקורות: צילום מערכת א׳1 המעודכן שסופק ב־10.10.2026, שהחליף את המערכת מ־25.08.2026; צילום מערכת א׳3 שסופק ב־10.09.2026; רשימת ציוד כיתות א׳ תשפ״ז; והבהרות ההורה לגבי הספר והמחברת לגאומטריה. שעות התחלה וסיום לא צוינו, ולכן מוצגים מספרי שיעורים בלבד. הנתונים האישיים נשמרים מקומית בלבד. במכשיר נייד יש לפתוח את האתר בדפדפן.</p>
+      <p class="edit-help">מקורות: צילום מערכת א׳1 המעודכן שסופק ב־10.10.2026, שהחליף את המערכת מ־25.08.2026; צילום מערכת א׳2 שסופק ב־13.10.2026; צילום מערכת א׳3 שסופק ב־10.09.2026; רשימת ציוד כיתות א׳ תשפ״ז; והבהרות ההורה לגבי הספר והמחברת לגאומטריה. שעות א׳2 צוינו בצילום ומפורטות כאן; לא הונח שהן חלות גם על כיתות אחרות. הנתונים האישיים נשמרים מקומית בלבד. במכשיר נייד יש לפתוח את האתר בדפדפן.</p>
     </div>
   </details>
       <details class="parent-panel">
@@ -697,6 +700,7 @@
       <label for="welcome-class">באיזו כיתה?</label>
       <select id="welcome-class" required>
         <option value="a1" selected>א׳1</option>
+        <option value="a2">א׳2</option>
         <option value="a3">א׳3</option>
       </select>
       <div class="welcome-actions">
@@ -1675,6 +1679,115 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     "water",
     "lunch"
   ],
+  "a2Preset": {
+    "className": "א׳2",
+    "periodCount": 5,
+    "lessons": [
+      [
+        [
+          "math"
+        ],
+        [
+          "math"
+        ],
+        [
+          "hebrew",
+          "music"
+        ],
+        [
+          "grade"
+        ],
+        [
+          "science"
+        ]
+      ],
+      [
+        [
+          "hebrew"
+        ],
+        [
+          "sport"
+        ],
+        [
+          "math"
+        ],
+        [
+          "library"
+        ],
+        [
+          "life"
+        ]
+      ],
+      [
+        [
+          "math"
+        ],
+        [
+          "math"
+        ],
+        [
+          "art",
+          "hebrew"
+        ],
+        [
+          "hebrew"
+        ],
+        [
+          "hebrew"
+        ]
+      ],
+      [
+        [
+          "heart"
+        ],
+        [
+          "roads"
+        ],
+        [
+          "math"
+        ],
+        [
+          "life"
+        ],
+        [
+          "hebrew"
+        ]
+      ],
+      [
+        [
+          "hebrew"
+        ],
+        [
+          "art",
+          "hebrew"
+        ],
+        [
+          "hebrew"
+        ],
+        [
+          "math"
+        ],
+        [
+          "math"
+        ]
+      ],
+      [
+        [
+          "music"
+        ],
+        [
+          "science"
+        ],
+        [
+          "science"
+        ],
+        [
+          "sport"
+        ],
+        []
+      ]
+    ]
+  },
   "a3Preset": {
     "className": "א׳3",
     "periodCount": 5,
@@ -2051,7 +2164,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
     const normalizedClass = value => fileLabel(value).toLowerCase().replace(/-/g, "").replace(/^a/, "א");
     const hasLessons = () => data.days.some(day => day.lessons.some(lesson => lesson.length));
     const blankDays = count => data.days.map(day => ({...day, lessons: Array.from({length: count}, () => [])}));
-    const schedulePresets = {a1: data.a1Preset, a3: data.a3Preset};
+    const schedulePresets = {a1: data.a1Preset, a2: data.a2Preset, a3: data.a3Preset};
     const phoneScreen = window.matchMedia("screen and (max-width: 900px)");
     const schoolClock = new Intl.DateTimeFormat("en-US", {timeZone: "Asia/Jerusalem", weekday: "short", hour: "2-digit", hourCycle: "h23"});
     const storageKey = "rokach-grade-1-settings-v1";
@@ -3421,8 +3534,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       if (event.target.id === "period-count") changePeriodCount();
       if (event.target instanceof HTMLSelectElement && event.target.dataset.lessonDay) updateLessonSummary(event.target.closest("td"));
     });
-    document.getElementById("load-a1").addEventListener("click", () => replaceSchedule("a1"));
-    document.getElementById("load-a3").addEventListener("click", () => replaceSchedule("a3"));
+    for (const id of Object.keys(schedulePresets)) document.getElementById(`load-${id}`).addEventListener("click", () => replaceSchedule(id));
     document.getElementById("clear-schedule").addEventListener("click", () => replaceSchedule(null));
     document.getElementById("custom-subject-form").addEventListener("submit", event => {
       event.preventDefault();
@@ -3514,7 +3626,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var n,r,i,a,
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = mode === "grade" ? "נשלחה להורדה תבנית ריקה לשכבת א׳ — ללא כיתה, שיעורים או פרטי משפחה. מערכות א׳1 וא׳3 נשארות זמינות לטעינה." : clean ? "נשלח להורדה עותק של מערכת הכיתה שבניתם, ללא שם ילד/ה או ציוד אישי. העותק שעל המסך לא נמחק." : "העותק האישי, כולל מערכת השעות, ההתאמות והכריכות, נשלח להורדה.";
+      status.textContent = mode === "grade" ? "נשלחה להורדה תבנית ריקה לשכבת א׳ — ללא כיתה, שיעורים או פרטי משפחה. מערכות א׳1, א׳2 וא׳3 נשארות זמינות לטעינה." : clean ? "נשלח להורדה עותק של מערכת הכיתה שבניתם, ללא שם ילד/ה או ציוד אישי. העותק שעל המסך לא נמחק." : "העותק האישי, כולל מערכת השעות, ההתאמות והכריכות, נשלח להורדה.";
     }
     document.getElementById("download-button").addEventListener("click", () => downloadHTML("personal"));
     document.getElementById("share-button").addEventListener("click", () => downloadHTML("class"));

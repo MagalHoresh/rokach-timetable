@@ -8,6 +8,14 @@ const html = readFileSync(new URL("../site/index.html", import.meta.url), "utf8"
 const plain = value => JSON.parse(JSON.stringify(value));
 const sourceData = JSON.parse(html.match(/<script id="app-data" type="application\/json">([\s\S]*?)<\/script>/)[1]);
 const key = "rokach-grade-1-settings-v1";
+const a2Lessons = [
+  [["math"], ["math"], ["hebrew", "music"], ["grade"], ["science"]],
+  [["hebrew"], ["sport"], ["math"], ["library"], ["life"]],
+  [["math"], ["math"], ["art", "hebrew"], ["hebrew"], ["hebrew"]],
+  [["heart"], ["roads"], ["math"], ["life"], ["hebrew"]],
+  [["hebrew"], ["art", "hebrew"], ["hebrew"], ["math"], ["math"]],
+  [["music"], ["science"], ["science"], ["sport"], []]
+];
 
 function app(t, {saved, source = html, url = "https://rokach-timetable.magalhoresh.com"} = {}) {
   const dom = new JSDOM(source, {url, runScripts: "outside-only", pretendToBeVisual: true});
@@ -81,7 +89,156 @@ test("public defaults are blank and the GitHub-only footer is accessible and pri
   assert.match(html, /\.github-link:focus-visible/);
 });
 
-for (const preset of ["a1", "a3"]) {
+test("A2 matches every source-image cell and keeps combined lessons and the Friday empty slot", t => {
+  const application = app(t);
+  const {data, run} = application;
+  assert.equal(data.a2Preset.className, "א׳2");
+  assert.equal(data.a2Preset.periodCount, 5);
+  assert.deepEqual(plain(data.a2Preset.lessons), a2Lessons);
+  assert.equal(data.a2Preset.lessons.length, 6);
+  assert.ok(data.a2Preset.lessons.every(day => day.length === 5));
+  assert.deepEqual(plain(data.days.map(day => day.id)), ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]);
+  selectPreset(application, "a2");
+  assert.deepEqual(plain(data.days.map(day => day.lessons)), a2Lessons);
+  assert.deepEqual(plain(run("materialIds(['hebrew', 'music'])")), ["hebrew-notebook", "hebrew-book", "music-notebook"]);
+  assert.deepEqual(plain(run("materialIds(['art', 'hebrew'])")), ["pencilcase", "hebrew-notebook", "hebrew-book"]);
+  assert.match(run("lessonCell([])"), /משבצת ריקה/);
+  for (const [id, label] of Object.entries({
+    math: "חשבון", hebrew: "עברית", music: "מוסיקה", grade: "שעה שכבתית",
+    science: "מדעים", sport: "חנוך גופני", library: "ספריה", life: "כשורי חיים",
+    art: "אומנות", heart: "מפתח הלב", roads: "זהירות בדרכים"
+  })) {
+    assert.equal(run(`subjectForClass("${id}").name`).replace(/[\u0591-\u05c7]/g, ""), label);
+  }
+  for (const time of ["8:00–8:45", "8:45–9:30", "10:10–10:55", "10:55–11:40", "12:00–12:45"]) {
+    assert.ok(application.document.getElementById("settings-dialog").textContent.includes(time));
+  }
+  assert.ok(!html.includes("מערכת א׳2 טרם נמסרה"));
+});
+
+test("A1 remains the fresh-install default and presets are offered in A1, A2, A3 order", t => {
+  const {data, run, document, saved} = app(t);
+  assert.equal(data.className, "א׳1");
+  assert.deepEqual(plain(data.days.map(day => day.lessons)), sourceData.a1Preset.lessons);
+  assert.equal(saved(), null);
+  assert.deepEqual(plain(run("Object.keys(schedulePresets)")), ["a1", "a2", "a3"]);
+  assert.deepEqual([...document.querySelector("#welcome-class").options].map(option => option.value), ["a1", "a2", "a3"]);
+  assert.equal(document.getElementById("welcome-class").value, "a1");
+  assert.deepEqual([...document.querySelectorAll(".settings-presets button")].map(button => button.id), ["load-a1", "load-a2", "load-a3"]);
+  assert.equal(document.getElementById("load-a1").getAttribute("aria-pressed"), "true");
+  assert.equal(document.getElementById("load-a2").getAttribute("aria-pressed"), "false");
+});
+
+for (const skip of [false, true]) {
+  test(`A2 onboarding selection persists with ${skip ? "no name" : "a synthetic name"}`, t => {
+    const {document, window, data, saved} = app(t);
+    document.getElementById("welcome-class").value = "a2";
+    document.getElementById("welcome-name").value = "בדיקה";
+    if (skip) document.getElementById("skip-welcome").click();
+    else document.getElementById("welcome-form").dispatchEvent(new window.Event("submit", {bubbles: true, cancelable: true}));
+    assert.equal(data.className, "א׳2");
+    assert.deepEqual(plain(data.days.map(day => day.lessons)), a2Lessons);
+    assert.equal(data.personalization.childName, skip ? "" : "בדיקה");
+    assert.equal(saved().onboardingComplete, true);
+    assert.equal(document.getElementById("welcome-dialog").open, false);
+    assert.equal(document.getElementById("load-a2").getAttribute("aria-pressed"), "true");
+    assert.equal(app(t, {saved: saved()}).data.className, "א׳2");
+  });
+}
+
+test("settings buttons load every preset and A2 reload preserves personalized equipment and checks", t => {
+  const application = app(t);
+  const {data, document, run} = application;
+  document.getElementById("child-name").value = "בדיקה";
+  document.getElementById("personal-extras").value = "פריט אישי";
+  document.getElementById("activity-monday").value = "פריט לחוג";
+  document.getElementById("edit-math-book").value = "ספר אישי";
+  run("pencilChecks.add(2)");
+  for (const id of ["a2", "a3", "a1", "a2"]) {
+    document.getElementById(`load-${id}`).click();
+    assert.equal(data.className, sourceData[`${id}Preset`].className);
+    assert.deepEqual(plain(data.days.map(day => day.lessons)), sourceData[`${id}Preset`].lessons);
+    for (const other of ["a1", "a2", "a3"]) {
+      assert.equal(document.getElementById(`load-${other}`).getAttribute("aria-pressed"), String(other === id));
+    }
+    assert.equal(data.personalization.childName, "בדיקה");
+    assert.deepEqual(plain(data.personalization.extraItems), ["פריט אישי"]);
+    assert.deepEqual(plain(data.personalization.activityItems.monday), ["פריט לחוג"]);
+    assert.equal(data.items["math-book"].name, "ספר אישי");
+  }
+  const saved = application.saved();
+  assert.deepEqual(saved.pencilChecks, [2]);
+  const restored = app(t, {saved});
+  assert.equal(restored.data.className, "א׳2");
+  assert.deepEqual(plain(restored.data.days.map(day => day.lessons)), a2Lessons);
+  assert.deepEqual(restored.saved(), saved);
+  assert.equal(restored.document.getElementById("welcome-class").value, "a2");
+});
+
+for (const id of ["a1", "a3"]) {
+  test(`${id}: existing current-revision saved schedule and customizations are not reset`, t => {
+    const saved = oldSettings(id);
+    saved.equipmentRevision = "2026-10-13";
+    saved.lessons[0][0] = ["roads"];
+    saved.personalization.extraItems = ["פריט אישי"];
+    saved.items["math-book"].name = "ספר אישי";
+    saved.subjects.math.items = ["math-book"];
+    const application = app(t, {saved});
+    assert.equal(application.data.className, saved.className);
+    assert.deepEqual(plain(application.data.days.map(day => day.lessons)), saved.lessons);
+    assert.deepEqual(plain(application.data.subjects.math.items), ["math-book"]);
+    assert.equal(application.data.items["math-book"].name, "ספר אישי");
+    assert.deepEqual(plain(application.data.personalization), saved.personalization);
+    assert.deepEqual(application.saved(), saved);
+  });
+}
+
+test("an existing custom A2 label never triggers replacement, including incomplete onboarding", t => {
+  const saved = oldSettings("a1");
+  saved.className = "א׳2";
+  saved.lessons[0][0] = ["roads"];
+  saved.personalization.extraItems = ["פריט אישי"];
+  saved.subjects.math.items = ["math-book"];
+  saved.equipmentRevision = "2026-10-13";
+  saved.onboardingComplete = false;
+  const application = app(t, {saved});
+  assert.deepEqual(plain(application.data.days.map(day => day.lessons)), saved.lessons);
+  assert.deepEqual(application.saved(), saved);
+  application.document.getElementById("skip-welcome").click();
+  assert.deepEqual(plain(application.data.days.map(day => day.lessons)), saved.lessons);
+  assert.deepEqual(plain(application.data.subjects.math.items), ["math-book"]);
+  assert.deepEqual(plain(application.data.personalization), saved.personalization);
+});
+
+test("A2 schedule recognition warns on relabeling, accepts normalized names and protects custom drafts", t => {
+  const application = app(t);
+  const {run, data, document, window} = application;
+  selectPreset(application, "a2");
+  assert.equal(run("scheduleNotice()"), "");
+  data.className = "A2";
+  assert.equal(run("scheduleNotice()"), "");
+  assert.equal(run("subjectForClass('sport').name"), sourceData.subjects.sport.name);
+  assert.deepEqual(plain(run("subjectForClass('grade').items")), ["pencilcase"]);
+  assert.deepEqual(plain(run("subjectForClass('life').items")), ["pencilcase"]);
+  data.className = "א׳3";
+  assert.match(run("scheduleNotice()"), /זהים למערכת א׳2/);
+  data.periodCount = 6;
+  for (const day of data.days) day.lessons.push([]);
+  assert.match(run("scheduleNotice()"), /זהים למערכת א׳2/);
+  data.className = "א׳2";
+  data.days[0].lessons[0] = ["roads"];
+  run("renderScheduleEditor()");
+  assert.equal(run("scheduleNotice()"), "");
+  window.confirm = () => false;
+  document.getElementById("load-a2").click();
+  assert.deepEqual(plain(data.days[0].lessons[0]), ["roads"]);
+  assert.equal(data.periodCount, 6);
+  window.confirm = () => true;
+  document.getElementById("load-a2").click();
+  assert.deepEqual(plain(data.days.map(day => day.lessons)), a2Lessons);
+});
+
+for (const preset of ["a1", "a2", "a3"]) {
   test(`${preset}: every math lesson has separate book, notebook and accessories; packing deduplicates`, t => {
     const application = app(t);
     selectPreset(application, preset);
@@ -252,6 +409,79 @@ test("personal/class/grade HTML exports re-import with equipment and self-contai
     }
     assert.equal(imported.document.querySelector(".github-link").href, "https://github.com/MagalHoresh/rokach-timetable");
   }
+});
+
+test("A2 personal/class/grade downloads retain all preset selectors and re-import without replacing customized lessons", async t => {
+  const application = app(t);
+  const {run, window, document} = application;
+  document.getElementById("load-a2").click();
+  document.getElementById("child-name").value = "בדיקה";
+  document.getElementById("personal-extras").value = "פריט אישי";
+  document.getElementById("activity-monday").value = "פריט לחוג";
+  document.querySelector('[data-lesson-day="sunday"][data-period="0"][data-slot="0"]').value = "roads";
+  const customized = structuredClone(a2Lessons);
+  customized[0][0] = ["roads"];
+  for (const mode of ["personal", "class", "grade"]) {
+    run(`downloadHTML("${mode}")`);
+    const downloaded = await window.lastDownload.blob.text();
+    const imported = app(t, {source: downloaded, url: "file:///timetable.html"});
+    assert.deepEqual(plain(imported.run("Object.keys(schedulePresets)")), ["a1", "a2", "a3"]);
+    assert.deepEqual(plain(imported.data.a2Preset.lessons), a2Lessons);
+    assert.equal(imported.data.className, mode === "grade" ? "" : "א׳2");
+    assert.deepEqual(plain(imported.data.days.map(day => day.lessons)), mode === "grade" ? a2Lessons.map(day => day.map(() => [])) : customized);
+    assert.equal(imported.data.personalization.childName, mode === "personal" ? "בדיקה" : "");
+    assert.deepEqual(plain(imported.data.personalization.extraItems), mode === "personal" ? ["פריט אישי"] : []);
+    assert.deepEqual(plain(imported.data.personalization.activityItems.monday), mode === "personal" ? ["פריט לחוג"] : []);
+    assert.equal(imported.data.cloudSpeechConsent, false);
+    assert.equal(imported.data.nameGreetingConsent, null);
+    for (const id of ["a1", "a2", "a3"]) {
+      imported.document.getElementById(`load-${id}`).click();
+      assert.equal(imported.data.className, sourceData[`${id}Preset`].className);
+      assert.deepEqual(plain(imported.data.days.map(day => day.lessons)), sourceData[`${id}Preset`].lessons);
+    }
+  }
+});
+
+test("A2 timetable and PDF sources render every cell and packing/read-aloud use approved daily equipment", t => {
+  const application = app(t);
+  selectPreset(application, "a2");
+  const {run, data, document} = application;
+  for (const day of data.days) {
+    run(`selectMobileDay("${day.id}")`);
+    const rows = document.querySelectorAll("#phone-week .phone-table tbody tr");
+    assert.equal(rows.length, 5);
+    for (let period = 0; period < 5; period++) {
+      const ids = a2Lessons[data.days.indexOf(day)][period];
+      const title = rows[period].querySelector(".lesson-title");
+      assert.equal(title?.textContent || "", ids.map(id => run(`subjectForClass("${id}").name`)).join(" + "));
+    }
+    const ids = plain(run(`packingIds(data.days.find(day => day.id === "${day.id}"))`));
+    assert.equal(ids.includes("sports-shoes"), ["monday", "friday"].includes(day.id));
+    assert.equal(ids.filter(id => id === "math-accessories").length, Number(day.id !== "friday"));
+    assert.ok(!ids.includes("sports-kit"));
+    for (const id of ids) assert.ok(run(`spokenText(readingInstruction(data.items["${id}"]))`).length > 0);
+    const cards = run('pdfSource("day")').pages.join("");
+    assert.ok(cards.includes("א׳2"));
+    assert.equal(cards.includes(data.items["math-accessories"].name), day.id !== "friday");
+    assert.equal(cards.includes(data.items["sports-shoes"].name), ["monday", "friday"].includes(day.id));
+  }
+  const week = run('pdfSource("week")').pages.join("");
+  const pdfDOM = new JSDOM(week);
+  t.after(() => pdfDOM.window.close());
+  const rendered = pdfDOM.window.document;
+  const rows = [...rendered.querySelectorAll(".week-table tbody tr")];
+  assert.equal(rows.length, 5);
+  for (let period = 0; period < 5; period++) {
+    for (let day = 0; day < 6; day++) {
+      const cell = rows[period].querySelectorAll("td")[day];
+      assert.equal(cell.querySelector(".lesson-title")?.textContent || "", a2Lessons[day][period].map(id => run(`subjectForClass("${id}").name`)).join(" + "));
+    }
+  }
+  assert.ok(rows[4].querySelectorAll("td")[5].classList.contains("empty-cell"));
+  assert.ok(!week.includes('class="github-link"'));
+  const allCards = run('pdfSource("all-cards")').pages.join("");
+  assert.equal((allCards.match(/data-day="/g) || []).length, 6);
+  assert.equal((allCards.match(/data-item-name="שבילים חדשים - מארז אביזרים"/g) || []).length, 5);
 });
 
 test("changing or disabling the accessories pack persists and removes stale cover on rename", t => {

@@ -1,6 +1,6 @@
 # Rokach timetable
 
-A family-created Hebrew, right-to-left grade-one timetable and packing checklist. It includes the supplied A1 and A3 schedules, editable equipment, cover images for identification, optional read-aloud guidance and local PDF export. It is **not an official school website**; confirm schedules, editions and equipment with the teacher.
+A family-created Hebrew, right-to-left grade-one timetable and packing checklist. It includes the supplied A1, A2 and A3 schedules, editable equipment, cover images for identification, optional read-aloud guidance and local PDF export. It is **not an official school website**; confirm schedules, editions and equipment with the teacher.
 
 **Live site:** https://rokach-timetable.magalhoresh.com
 
@@ -16,7 +16,7 @@ npm start
 
 Open http://127.0.0.1:8080. This static preview supports the timetable, equipment settings and PDF export, but **does not host `/api/speak`**. To use speech, open the live site; the production API rejects unapproved origins.
 
-Tests use Node's test runner and a **jsdom DOM simulation**, not a real browser. They cover both schedules, equipment migrations, packing order, settings, downloaded HTML, PDF source content, read-aloud text and speech API origin handling. Real-browser layout, PDF rasterization and audio playback need separate manual checks.
+Tests use Node's test runner and a **jsdom DOM simulation**, not a real browser. They cover all three schedules, preset selection, saved customizations, equipment migrations, packing order, settings, downloaded HTML, PDF source content, read-aloud text and speech API origin handling. Real-browser layout, PDF rasterization and audio playback need separate manual checks.
 
 ## Maintain
 
@@ -26,6 +26,8 @@ Tests use Node's test runner and a **jsdom DOM simulation**, not a real browser.
 - `scripts/`: minimal localhost preview and code-only deployment helpers.
 
 The math accessories pack is separate from the math book and notebook. The equipment revision migrates older device settings without clearing personal data, edited item names or disabled items. A3's unchanged, unconfirmed sports-clothes example is replaced by sports shoes; deliberately changed/confirmed equipment is retained. A1 keeps its supplied sports-day rules.
+
+A1 remains the default for new installs. A2 is an additional preset, not a replacement for saved schedules or customizations; load it from onboarding or settings. Its six days and five periods follow the supplied image: combined lessons stay in one cell, Friday period five is empty, and sports shoes are required only on Monday and Friday. A2's supplied period times are listed in the help notes; timetable rows retain the existing period-number display without assuming those times apply to other classes. All three presets remain available in personal, class and blank grade HTML downloads.
 
 ## Deploy to the existing Azure app
 
