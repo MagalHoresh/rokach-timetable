@@ -239,6 +239,23 @@ test("A2 schedule recognition warns on relabeling, accepts normalized names and 
 });
 
 for (const preset of ["a1", "a2", "a3"]) {
+  test(`${preset}: compact weekly sheet keeps all five periods, covers and equipment in desktop and PDF source`, t => {
+    const {run, document, window, data} = app(t);
+    selectPreset({run}, preset);
+    const sheets = document.querySelectorAll("#sheets .week-sheet");
+    assert.equal(sheets.length, 1);
+    const sheet = sheets[0];
+    assert.equal(sheet.querySelectorAll(".week-table tbody tr").length, 5);
+    assert.deepEqual([...sheet.querySelectorAll(".week-table tbody th")].map(th => th.textContent), ["1", "2", "3", "4", "5"]);
+    assert.equal(sheet.querySelectorAll(".cover-image").length, 5);
+    assert.ok(sheet.textContent.includes(data.items["math-accessories"].name));
+    assert.equal(window.getComputedStyle(sheet.querySelector(".week-table td")).paddingTop, "2px");
+    assert.equal(window.getComputedStyle(sheet.querySelector(".week-table .material")).fontSize, "12px");
+    assert.equal(window.getComputedStyle(sheet.querySelector(".week-table .book-number")).height, "15px");
+    assert.equal(window.getComputedStyle(sheet.querySelector(".cover-image")).height, "23mm");
+    assert.deepEqual(plain(run('pdfSource("week").pages')), [sheet.outerHTML]);
+  });
+
   test(`${preset}: every math lesson has separate book, notebook and accessories; packing deduplicates`, t => {
     const application = app(t);
     selectPreset(application, preset);

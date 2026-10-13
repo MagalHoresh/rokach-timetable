@@ -29,6 +29,8 @@ The math accessories pack is separate from the math book and notebook. The equip
 
 A1 remains the default for new installs. A2 is an additional preset, not a replacement for saved schedules or customizations; load it from onboarding or settings. Its six days and five periods follow the supplied image: combined lessons stay in one cell, Friday period five is empty, and sports shoes are required only on Monday and Friday. A2's supplied period times are listed in the help notes; timetable rows retain the existing period-number display without assuming those times apply to other classes. All three presets remain available in personal, class and blank grade HTML downloads.
 
+The five-period presets fit on one landscape A4 weekly sheet in the desktop view and PDF export, including the accessories pack and all book covers. The weekly layout uses compact spacing; mobile lesson cards retain their larger text and controls. Longer or unusually dense custom schedules still paginate rather than hiding lessons or equipment.
+
 ## Deploy to the existing Azure app
 
 Deployment is manual, not automatically triggered by GitHub pushes. Requires authenticated Azure CLI and [Azure Static Web Apps CLI](https://azure.github.io/static-web-apps-cli/) 2.0.10. No new resource, paid plan, DNS change or GitHub workflow is needed.

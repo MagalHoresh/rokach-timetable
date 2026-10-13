@@ -203,10 +203,11 @@
       background: var(--paper);
       box-shadow: 0 8px 35px #20394b13;
     }
-    .week-sheet { display: flex; flex-direction: column; gap: 1.3mm; }
-    .week-header { display: flex; align-items: center; justify-content: space-between; min-height: 17mm; }
+    .week-sheet { display: flex; flex-direction: column; gap: 1mm; }
+    .week-header { display: flex; align-items: center; justify-content: space-between; min-height: 14mm; }
     .eyebrow { margin: 0 0 1mm; color: var(--muted); font-size: 11px; font-weight: 700; }
     h1 { font-size: 34px; line-height: 1.22; margin: 0; letter-spacing: -.5px; }
+    .week-header h1 { font-size: 30px; }
     h1.long-title { font-size: 28px; }
     .week-sheet.with-personal { gap: 1mm; }
     .with-personal .week-header { min-height: 13.5mm; }
@@ -226,7 +227,7 @@
     .week-table thead th:first-child { font-size: 10px; color: var(--muted); background: transparent; }
     .week-table tbody tr { height: 20%; }
     .week-table tbody th { font-size: 22px; font-weight: 800; color: #526b7c; border-radius: 7px; background: #f3f6f8; }
-    .week-table td { vertical-align: top; border: 1px solid var(--line); border-radius: 7px; padding: 3px 6px; background: #fff; }
+    .week-table td { vertical-align: top; border: 1px solid var(--line); border-radius: 7px; padding: 2px 5px; background: #fff; }
     .lesson-title { display: flex; align-items: center; gap: 4px; min-height: 19px; margin: 0 0 2px; font-size: 14px; line-height: 1.2; font-weight: 800; overflow-wrap: anywhere; }
     .subject-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--subject-color); flex: 0 0 auto; }
     .materials { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 3px; }
@@ -236,13 +237,18 @@
     .material .item-name { overflow-wrap: anywhere; }
     .material .item-name.long-name { font-size: 11.5px; }
     .book-number { display: inline-grid; place-items: center; flex: 0 0 auto; width: 17px; height: 17px; border: 1.5px solid #5e6b75; border-radius: 50%; color: #344552; background: white; font-size: 11px; font-weight: 800; line-height: 1; }
+    .week-table .lesson-title { min-height: 17px; font-size: 13px; margin-bottom: 1px; }
+    .week-table .materials { gap: 1px 3px; }
+    .week-table .material { min-height: 15px; font-size: 12px; line-height: 1.15; }
+    .week-table .material .item-name.long-name { font-size: 11px; }
+    .week-table .material .supply-icon, .week-table .book-number { width: 15px; height: 15px; }
     .book-key { flex: 0 0 auto; }
     .book-key-heading { display: flex; align-items: baseline; gap: 10px; margin: 0 0 1mm; }
     .book-key-heading h2 { font-size: 13px; margin: 0; }
     .book-key-heading p { font-size: 10px; color: var(--muted); margin: 0; }
     .book-covers { display: grid; grid-template-columns: repeat(var(--book-count, 4), minmax(0, 1fr)); gap: 3mm; padding: 1.5mm 2mm; border: 1px solid var(--line); border-radius: 9px; }
-    .cover-figure { margin: 0; display: flex; align-items: center; gap: 2mm; min-width: 0; height: 26mm; }
-    .cover-image, .cover-placeholder { width: 17mm; height: 25mm; flex: 0 0 auto; object-fit: contain; background: #fff; }
+    .cover-figure { margin: 0; display: flex; align-items: center; gap: 2mm; min-width: 0; height: 24mm; }
+    .cover-image, .cover-placeholder { width: 17mm; height: 23mm; flex: 0 0 auto; object-fit: contain; background: #fff; }
     .cover-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #b8c4cc; border-radius: 3px; }
     .cover-placeholder .supply-icon { width: 30px; height: 35px; }
     .cover-placeholder span { font-size: 9px; text-align: center; }
