@@ -1,0 +1,20 @@
+{
+  "platform": {
+    "apiRuntime": "node:22"
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "headers": {
+        "Cache-Control": "private, no-store, max-age=0"
+      }
+    }
+  ],
+  "globalHeaders": {
+    "Cache-Control": "no-cache",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
+    "X-Frame-Options": "DENY",
+    "X-Robots-Tag": "noindex, nofollow"
+  }
+}

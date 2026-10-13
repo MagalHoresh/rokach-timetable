@@ -1,0 +1,17 @@
+{
+  "name": "rokach-timetable",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hebrew grade-one timetable and accessible packing checklist",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.1"
+  }
+}

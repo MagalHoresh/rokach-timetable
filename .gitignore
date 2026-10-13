@@ -1,0 +1,10 @@
+node_modules/
+.azure/
+.swa/
+local.settings.json
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+coverage/
